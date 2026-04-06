@@ -45,7 +45,6 @@ def set_mock_config(config: MockConfig):
         },
     }
 
-
 @app.post("/__admin/reset")
 def reset_mock():
     MOCK_STATE["risk_score"] = 50
@@ -55,11 +54,9 @@ def reset_mock():
     MOCK_STATE["last_request"] = None
     return {"message": "Mock state reset"}
 
-
 @app.get("/__admin/state")
 def get_mock_state():
     return MOCK_STATE
-
 
 @app.post("/score", response_model=RiskEngineResponse)
 def score_application(payload: RiskEngineRequest):
