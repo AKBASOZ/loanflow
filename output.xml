@@ -1,0 +1,753 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.12.7 on win32)" generated="2026-04-07T21:09:08.636958" rpa="false" schemaversion="5">
+<suite id="s1" name="Applications" source="C:\Users\oguzh\loanflow\tests\applications.robot">
+<kw name="Prepare Test Environment" owner="common" type="SETUP">
+<kw name="Create Application Api Session" owner="api">
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-07T21:09:08.998312" level="INFO">Creating Session using : alias=application_api, url=http://127.0.0.1:8000, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>application_api</arg>
+<arg>${APPLICATION_API_BASE_URL}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-07T21:09:08.998312" elapsed="0.001010"/>
+</kw>
+<status status="PASS" start="2026-04-07T21:09:08.998312" elapsed="0.001010"/>
+</kw>
+<status status="PASS" start="2026-04-07T21:09:08.996901" elapsed="0.002421"/>
+</kw>
+<test id="s1-t1" name="Auto Approve Application At Exact Boundary" line="8">
+<kw name="Reset Test State" owner="common" type="SETUP">
+<kw name="Reset Application Api State" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:09.553453" level="INFO">HTTP Request: POST http://127.0.0.1:8000/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:09.000680" elapsed="0.554404"/>
+</kw>
+<kw name="Reset Risk Engine Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:10.010839" level="INFO">HTTP Request: POST http://127.0.0.1:8001/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:09.555084" elapsed="0.457762"/>
+</kw>
+<kw name="Reset Notification Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:10.514340" level="INFO">HTTP Request: POST http://127.0.0.1:8002/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:10.012846" elapsed="0.505249"/>
+</kw>
+<status status="PASS" start="2026-04-07T21:09:09.000680" elapsed="1.517415"/>
+</kw>
+<kw name="Configure Risk Engine Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:10.956939" level="INFO">HTTP Request: POST http://127.0.0.1:8001/__admin/config "HTTP/1.1 200 OK"</msg>
+<arg>70</arg>
+<arg>approve</arg>
+<arg>0</arg>
+<status status="PASS" start="2026-04-07T21:09:10.519099" elapsed="0.437840"/>
+</kw>
+<kw name="Create Boundary Approval Payload" owner="common">
+<kw name="Generate Application Payload" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:10.959956" level="INFO">${payload} = {'applicant_name': 'Applicant-c84b40d8', 'annual_income': 40000, 'requested_amount': 20000, 'employment_status': 'employed', 'notes': 'Robot test payload'}</msg>
+<var>${payload}</var>
+<arg>annual_income=40000</arg>
+<arg>requested_amount=20000</arg>
+<arg>employment_status=employed</arg>
+<status status="PASS" start="2026-04-07T21:09:10.959956" elapsed="0.000000"/>
+</kw>
+<return>
+<value>${payload}</value>
+<status status="PASS" start="2026-04-07T21:09:10.959956" elapsed="0.001392"/>
+</return>
+<msg time="2026-04-07T21:09:10.961348" level="INFO">${payload} = {'applicant_name': 'Applicant-c84b40d8', 'annual_income': 40000, 'requested_amount': 20000, 'employment_status': 'employed', 'notes': 'Robot test payload'}</msg>
+<var>${payload}</var>
+<status status="PASS" start="2026-04-07T21:09:10.958943" elapsed="0.002405"/>
+</kw>
+<kw name="Create Loan Application" owner="api">
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-07T21:09:11.945869" level="INFO">POST Request : url=http://127.0.0.1:8000/applications 
+ path_url=/applications 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Length': '155', 'Content-Type': 'application/json'} 
+ body=b'{"applicant_name": "Applicant-c84b40d8", "annual_income": 40000, "requested_amount": 20000, "employment_status": "employed", "notes": "Robot test payload"}' 
+ </msg>
+<msg time="2026-04-07T21:09:11.953748" level="INFO">POST Response : url=http://127.0.0.1:8000/applications 
+ status=201, reason=Created 
+ headers={'date': 'Tue, 07 Apr 2026 19:09:10 GMT', 'server': 'uvicorn', 'content-length': '376', 'content-type': 'application/json'} 
+ body={"id":"ed64d1e9-4a64-4470-90d7-64d41d5cedc6","applicant_name":"Applicant-c84b40d8","annual_income":40000.0,"requested_amount":20000.0,"employment_status":"employed","status":"approved","risk_score":70,"decision_reason":"Meets auto-approval threshold","created_at":"2026-04-07T19:09:11.447542+00:00","updated_at":"2026-04-07T19:09:11.447542+00:00","notes":"Robot test payload"} 
+ </msg>
+<msg time="2026-04-07T21:09:11.953748" level="INFO">${response} = &lt;Response [201]&gt;</msg>
+<var>${response}</var>
+<arg>application_api</arg>
+<arg>/applications</arg>
+<arg>json=${payload}</arg>
+<arg>expected_status=anything</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-07T21:09:10.962490" elapsed="0.991258"/>
+</kw>
+<return>
+<value>${response}</value>
+<status status="PASS" start="2026-04-07T21:09:11.953748" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:11.953748" level="INFO">${response} = &lt;Response [201]&gt;</msg>
+<var>${response}</var>
+<arg>${payload}</arg>
+<status status="PASS" start="2026-04-07T21:09:10.961348" elapsed="0.992400"/>
+</kw>
+<kw name="Response Status Should Be" owner="api">
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2026-04-07T21:09:11.959078" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${response.status_code}</arg>
+<arg>${expected_status_code}</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2026-04-07T21:09:11.956455" elapsed="0.003638"/>
+</kw>
+<arg>${response}</arg>
+<arg>201</arg>
+<status status="PASS" start="2026-04-07T21:09:11.956455" elapsed="0.003638"/>
+</kw>
+<kw name="Get Response Json" owner="api">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-07T21:09:11.962479" level="INFO">${body} = {'id': 'ed64d1e9-4a64-4470-90d7-64d41d5cedc6', 'applicant_name': 'Applicant-c84b40d8', 'annual_income': 40000.0, 'requested_amount': 20000.0, 'employment_status': 'employed', 'status': 'approved', 'ri...</msg>
+<var>${body}</var>
+<arg>$response.json()</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-07T21:09:11.960093" elapsed="0.002386"/>
+</kw>
+<return>
+<value>${body}</value>
+<status status="PASS" start="2026-04-07T21:09:11.963485" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:11.963485" level="INFO">${body} = {'id': 'ed64d1e9-4a64-4470-90d7-64d41d5cedc6', 'applicant_name': 'Applicant-c84b40d8', 'annual_income': 40000.0, 'requested_amount': 20000.0, 'employment_status': 'employed', 'status': 'approved', 'ri...</msg>
+<var>${body}</var>
+<arg>${response}</arg>
+<status status="PASS" start="2026-04-07T21:09:11.960093" elapsed="0.003392"/>
+</kw>
+<kw name="Should Be Equal" owner="BuiltIn">
+<arg>${body}[status]</arg>
+<arg>approved</arg>
+<doc>Fails if the given objects are unequal.</doc>
+<status status="PASS" start="2026-04-07T21:09:11.963485" elapsed="0.004019"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2026-04-07T21:09:11.969010" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${body}[risk_score]</arg>
+<arg>70</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2026-04-07T21:09:11.969010" elapsed="0.000000"/>
+</kw>
+<kw name="Should Be Equal" owner="BuiltIn">
+<arg>${body}[decision_reason]</arg>
+<arg>Meets auto-approval threshold</arg>
+<doc>Fails if the given objects are unequal.</doc>
+<status status="PASS" start="2026-04-07T21:09:11.970023" elapsed="0.000000"/>
+</kw>
+<kw name="Latest Notification Should Have Status" owner="common">
+<kw name="Get Notifications" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:12.436903" level="INFO">HTTP Request: GET http://127.0.0.1:8002/notifications "HTTP/1.1 200 OK"</msg>
+<msg time="2026-04-07T21:09:12.436903" level="INFO">${notifications_response} = {'call_count': 1, 'notifications': [{'application_id': 'ed64d1e9-4a64-4470-90d7-64d41d5cedc6', 'status': 'approved'}]}</msg>
+<var>${notifications_response}</var>
+<status status="PASS" start="2026-04-07T21:09:11.972035" elapsed="0.464868"/>
+</kw>
+<kw name="Should Have Notification For Status" owner="loanflow_keywords">
+<arg>${notifications_response}</arg>
+<arg>${expected_status}</arg>
+<status status="PASS" start="2026-04-07T21:09:12.436903" elapsed="0.000000"/>
+</kw>
+<arg>approved</arg>
+<status status="PASS" start="2026-04-07T21:09:11.970023" elapsed="0.468883"/>
+</kw>
+<doc>Approves when risk_score &gt;= 70 and income-to-loan ratio &gt;= 2.0.</doc>
+<status status="PASS" start="2026-04-07T21:09:08.999322" elapsed="3.441307"/>
+</test>
+<test id="s1-t2" name="Reject Invalid Requested Amount" line="20">
+<kw name="Reset Test State" owner="common" type="SETUP">
+<kw name="Reset Application Api State" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:12.865704" level="INFO">HTTP Request: POST http://127.0.0.1:8000/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:12.443460" elapsed="0.424265"/>
+</kw>
+<kw name="Reset Risk Engine Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:13.328877" level="INFO">HTTP Request: POST http://127.0.0.1:8001/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:12.867725" elapsed="0.462158"/>
+</kw>
+<kw name="Reset Notification Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:13.770094" level="INFO">HTTP Request: POST http://127.0.0.1:8002/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:13.329883" elapsed="0.442222"/>
+</kw>
+<status status="PASS" start="2026-04-07T21:09:12.442717" elapsed="1.329388"/>
+</kw>
+<kw name="Configure Risk Engine For Approval" owner="common">
+<kw name="Configure Risk Engine Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:14.205264" level="INFO">HTTP Request: POST http://127.0.0.1:8001/__admin/config "HTTP/1.1 200 OK"</msg>
+<arg>85</arg>
+<arg>approve</arg>
+<arg>0</arg>
+<status status="PASS" start="2026-04-07T21:09:13.774109" elapsed="0.431155"/>
+</kw>
+<status status="PASS" start="2026-04-07T21:09:13.772105" elapsed="0.435162"/>
+</kw>
+<kw name="Create Invalid Amount Payload" owner="common">
+<kw name="Generate Application Payload" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:14.207267" level="INFO">${payload} = {'applicant_name': 'Applicant-91f4da99', 'annual_income': 65000, 'requested_amount': 500, 'employment_status': 'employed', 'notes': 'Robot test payload'}</msg>
+<var>${payload}</var>
+<arg>requested_amount=500</arg>
+<status status="PASS" start="2026-04-07T21:09:14.207267" elapsed="0.000000"/>
+</kw>
+<return>
+<value>${payload}</value>
+<status status="PASS" start="2026-04-07T21:09:14.207267" elapsed="0.002005"/>
+</return>
+<msg time="2026-04-07T21:09:14.209272" level="INFO">${payload} = {'applicant_name': 'Applicant-91f4da99', 'annual_income': 65000, 'requested_amount': 500, 'employment_status': 'employed', 'notes': 'Robot test payload'}</msg>
+<var>${payload}</var>
+<status status="PASS" start="2026-04-07T21:09:14.207267" elapsed="0.002005"/>
+</kw>
+<kw name="Create Loan Application" owner="api">
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-07T21:09:14.232434" level="INFO">POST Request : url=http://127.0.0.1:8000/applications 
+ path_url=/applications 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Length': '153', 'Content-Type': 'application/json'} 
+ body=b'{"applicant_name": "Applicant-91f4da99", "annual_income": 65000, "requested_amount": 500, "employment_status": "employed", "notes": "Robot test payload"}' 
+ </msg>
+<msg time="2026-04-07T21:09:14.232434" level="INFO">POST Response : url=http://127.0.0.1:8000/applications 
+ status=422, reason=Unprocessable Entity 
+ headers={'date': 'Tue, 07 Apr 2026 19:09:13 GMT', 'server': 'uvicorn', 'content-length': '162', 'content-type': 'application/json'} 
+ body={"detail":[{"type":"greater_than_equal","loc":["body","requested_amount"],"msg":"Input should be greater than or equal to 1000","input":500,"ctx":{"ge":1000.0}}]} 
+ </msg>
+<msg time="2026-04-07T21:09:14.232434" level="INFO">${response} = &lt;Response [422]&gt;</msg>
+<var>${response}</var>
+<arg>application_api</arg>
+<arg>/applications</arg>
+<arg>json=${payload}</arg>
+<arg>expected_status=anything</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-07T21:09:14.216329" elapsed="0.016105"/>
+</kw>
+<return>
+<value>${response}</value>
+<status status="PASS" start="2026-04-07T21:09:14.232434" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:14.234663" level="INFO">${response} = &lt;Response [422]&gt;</msg>
+<var>${response}</var>
+<arg>${payload}</arg>
+<status status="PASS" start="2026-04-07T21:09:14.210321" elapsed="0.024342"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${response.status_code} &gt;= 400</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2026-04-07T21:09:14.234663" elapsed="0.000000"/>
+</kw>
+<doc>Returns validation error when requested_amount is below minimum.</doc>
+<status status="PASS" start="2026-04-07T21:09:12.442717" elapsed="1.791946"/>
+</test>
+<test id="s1-t3" name="Reject Unemployed Applicant Above 10000" line="27">
+<kw name="Reset Test State" owner="common" type="SETUP">
+<kw name="Reset Application Api State" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:14.662477" level="INFO">HTTP Request: POST http://127.0.0.1:8000/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:14.237387" elapsed="0.425090"/>
+</kw>
+<kw name="Reset Risk Engine Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:15.106017" level="INFO">HTTP Request: POST http://127.0.0.1:8001/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:14.662477" elapsed="0.443540"/>
+</kw>
+<kw name="Reset Notification Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:15.503209" level="INFO">HTTP Request: POST http://127.0.0.1:8002/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:15.106017" elapsed="0.402939"/>
+</kw>
+<status status="PASS" start="2026-04-07T21:09:14.237387" elapsed="1.271569"/>
+</kw>
+<kw name="Configure Risk Engine Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:15.924336" level="INFO">HTTP Request: POST http://127.0.0.1:8001/__admin/config "HTTP/1.1 200 OK"</msg>
+<arg>85</arg>
+<arg>approve</arg>
+<arg>0</arg>
+<status status="PASS" start="2026-04-07T21:09:15.508956" elapsed="0.415380"/>
+</kw>
+<kw name="Create Unemployed High Amount Payload" owner="common">
+<kw name="Generate Application Payload" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:15.928344" level="INFO">${payload} = {'applicant_name': 'Applicant-433c3d9b', 'annual_income': 30000, 'requested_amount': 15000, 'employment_status': 'unemployed', 'notes': 'Robot test payload'}</msg>
+<var>${payload}</var>
+<arg>annual_income=30000</arg>
+<arg>requested_amount=15000</arg>
+<arg>employment_status=unemployed</arg>
+<status status="PASS" start="2026-04-07T21:09:15.928344" elapsed="0.000000"/>
+</kw>
+<return>
+<value>${payload}</value>
+<status status="PASS" start="2026-04-07T21:09:15.928846" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:15.928846" level="INFO">${payload} = {'applicant_name': 'Applicant-433c3d9b', 'annual_income': 30000, 'requested_amount': 15000, 'employment_status': 'unemployed', 'notes': 'Robot test payload'}</msg>
+<var>${payload}</var>
+<status status="PASS" start="2026-04-07T21:09:15.924336" elapsed="0.004510"/>
+</kw>
+<kw name="Create Loan Application" owner="api">
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-07T21:09:16.772029" level="INFO">POST Request : url=http://127.0.0.1:8000/applications 
+ path_url=/applications 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Length': '157', 'Content-Type': 'application/json'} 
+ body=b'{"applicant_name": "Applicant-433c3d9b", "annual_income": 30000, "requested_amount": 15000, "employment_status": "unemployed", "notes": "Robot test payload"}' 
+ </msg>
+<msg time="2026-04-07T21:09:16.772029" level="INFO">POST Response : url=http://127.0.0.1:8000/applications 
+ status=201, reason=Created 
+ headers={'date': 'Tue, 07 Apr 2026 19:09:15 GMT', 'server': 'uvicorn', 'content-length': '396', 'content-type': 'application/json'} 
+ body={"id":"954342a5-53b4-4179-ac48-1c05c3a0c8b8","applicant_name":"Applicant-433c3d9b","annual_income":30000.0,"requested_amount":15000.0,"employment_status":"unemployed","status":"rejected","risk_score":85,"decision_reason":"Unemployed applicant requesting more than 10000","created_at":"2026-04-07T19:09:16.357028+00:00","updated_at":"2026-04-07T19:09:16.357028+00:00","notes":"Robot test payload"} 
+ </msg>
+<msg time="2026-04-07T21:09:16.772029" level="INFO">${response} = &lt;Response [201]&gt;</msg>
+<var>${response}</var>
+<arg>application_api</arg>
+<arg>/applications</arg>
+<arg>json=${payload}</arg>
+<arg>expected_status=anything</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-07T21:09:15.929856" elapsed="0.842173"/>
+</kw>
+<return>
+<value>${response}</value>
+<status status="PASS" start="2026-04-07T21:09:16.772029" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:16.772029" level="INFO">${response} = &lt;Response [201]&gt;</msg>
+<var>${response}</var>
+<arg>${payload}</arg>
+<status status="PASS" start="2026-04-07T21:09:15.928846" elapsed="0.845187"/>
+</kw>
+<kw name="Response Status Should Be" owner="api">
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2026-04-07T21:09:16.780065" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${response.status_code}</arg>
+<arg>${expected_status_code}</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2026-04-07T21:09:16.780065" elapsed="0.000000"/>
+</kw>
+<arg>${response}</arg>
+<arg>201</arg>
+<status status="PASS" start="2026-04-07T21:09:16.774033" elapsed="0.006032"/>
+</kw>
+<kw name="Get Response Json" owner="api">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-07T21:09:16.783320" level="INFO">${body} = {'id': '954342a5-53b4-4179-ac48-1c05c3a0c8b8', 'applicant_name': 'Applicant-433c3d9b', 'annual_income': 30000.0, 'requested_amount': 15000.0, 'employment_status': 'unemployed', 'status': 'rejected', '...</msg>
+<var>${body}</var>
+<arg>$response.json()</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-07T21:09:16.783320" elapsed="0.000000"/>
+</kw>
+<return>
+<value>${body}</value>
+<status status="PASS" start="2026-04-07T21:09:16.783320" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:16.783320" level="INFO">${body} = {'id': '954342a5-53b4-4179-ac48-1c05c3a0c8b8', 'applicant_name': 'Applicant-433c3d9b', 'annual_income': 30000.0, 'requested_amount': 15000.0, 'employment_status': 'unemployed', 'status': 'rejected', '...</msg>
+<var>${body}</var>
+<arg>${response}</arg>
+<status status="PASS" start="2026-04-07T21:09:16.783320" elapsed="0.000000"/>
+</kw>
+<kw name="Should Be Equal" owner="BuiltIn">
+<arg>${body}[status]</arg>
+<arg>rejected</arg>
+<doc>Fails if the given objects are unequal.</doc>
+<status status="PASS" start="2026-04-07T21:09:16.783320" elapsed="0.000000"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2026-04-07T21:09:16.783320" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${body}[risk_score]</arg>
+<arg>85</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2026-04-07T21:09:16.783320" elapsed="0.000000"/>
+</kw>
+<kw name="Should Be Equal" owner="BuiltIn">
+<arg>${body}[decision_reason]</arg>
+<arg>Unemployed applicant requesting more than 10000</arg>
+<doc>Fails if the given objects are unequal.</doc>
+<status status="PASS" start="2026-04-07T21:09:16.783320" elapsed="0.000000"/>
+</kw>
+<kw name="Latest Notification Should Have Status" owner="common">
+<kw name="Get Notifications" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:17.205574" level="INFO">HTTP Request: GET http://127.0.0.1:8002/notifications "HTTP/1.1 200 OK"</msg>
+<msg time="2026-04-07T21:09:17.206978" level="INFO">${notifications_response} = {'call_count': 1, 'notifications': [{'application_id': '954342a5-53b4-4179-ac48-1c05c3a0c8b8', 'status': 'rejected'}]}</msg>
+<var>${notifications_response}</var>
+<status status="PASS" start="2026-04-07T21:09:16.783320" elapsed="0.423658"/>
+</kw>
+<kw name="Should Have Notification For Status" owner="loanflow_keywords">
+<arg>${notifications_response}</arg>
+<arg>${expected_status}</arg>
+<status status="PASS" start="2026-04-07T21:09:17.206978" elapsed="0.000000"/>
+</kw>
+<arg>rejected</arg>
+<status status="PASS" start="2026-04-07T21:09:16.783320" elapsed="0.423658"/>
+</kw>
+<doc>Rejects when employment_status is unemployed and requested_amount &gt; 10000.</doc>
+<status status="PASS" start="2026-04-07T21:09:14.234663" elapsed="2.972315"/>
+</test>
+<test id="s1-t4" name="Risk Engine Timeout Sets Error Status" line="39">
+<kw name="Reset Test State" owner="common" type="SETUP">
+<kw name="Reset Application Api State" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:17.632059" level="INFO">HTTP Request: POST http://127.0.0.1:8000/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:17.210001" elapsed="0.422058"/>
+</kw>
+<kw name="Reset Risk Engine Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:18.074832" level="INFO">HTTP Request: POST http://127.0.0.1:8001/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:17.638149" elapsed="0.436683"/>
+</kw>
+<kw name="Reset Notification Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:18.501366" level="INFO">HTTP Request: POST http://127.0.0.1:8002/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:18.074832" elapsed="0.432606"/>
+</kw>
+<status status="PASS" start="2026-04-07T21:09:17.208982" elapsed="1.298456"/>
+</kw>
+<kw name="Configure Risk Engine For Timeout" owner="common">
+<kw name="Configure Risk Engine Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:18.954733" level="INFO">HTTP Request: POST http://127.0.0.1:8001/__admin/config "HTTP/1.1 200 OK"</msg>
+<arg>50</arg>
+<arg>manual_review</arg>
+<arg>6</arg>
+<status status="PASS" start="2026-04-07T21:09:18.509951" elapsed="0.460399"/>
+</kw>
+<status status="PASS" start="2026-04-07T21:09:18.508944" elapsed="0.461406"/>
+</kw>
+<kw name="Create Standard Application Payload" owner="common">
+<kw name="Generate Application Payload" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:18.974706" level="INFO">${payload} = {'applicant_name': 'Applicant-34df6147', 'annual_income': 65000, 'requested_amount': 25000, 'employment_status': 'employed', 'notes': 'Robot test payload'}</msg>
+<var>${payload}</var>
+<status status="PASS" start="2026-04-07T21:09:18.974706" elapsed="0.000000"/>
+</kw>
+<return>
+<value>${payload}</value>
+<status status="PASS" start="2026-04-07T21:09:18.974706" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:18.974706" level="INFO">${payload} = {'applicant_name': 'Applicant-34df6147', 'annual_income': 65000, 'requested_amount': 25000, 'employment_status': 'employed', 'notes': 'Robot test payload'}</msg>
+<var>${payload}</var>
+<status status="PASS" start="2026-04-07T21:09:18.974706" elapsed="0.000000"/>
+</kw>
+<kw name="Create Loan Application" owner="api">
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-07T21:09:24.911198" level="INFO">POST Request : url=http://127.0.0.1:8000/applications 
+ path_url=/applications 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Length': '155', 'Content-Type': 'application/json'} 
+ body=b'{"applicant_name": "Applicant-34df6147", "annual_income": 65000, "requested_amount": 25000, "employment_status": "employed", "notes": "Robot test payload"}' 
+ </msg>
+<msg time="2026-04-07T21:09:24.911198" level="INFO">POST Response : url=http://127.0.0.1:8000/applications 
+ status=201, reason=Created 
+ headers={'date': 'Tue, 07 Apr 2026 19:09:17 GMT', 'server': 'uvicorn', 'content-length': '380', 'content-type': 'application/json'} 
+ body={"id":"def175da-dc82-4416-a80e-85099735bb80","applicant_name":"Applicant-34df6147","annual_income":65000.0,"requested_amount":25000.0,"employment_status":"employed","status":"error","risk_score":null,"decision_reason":"Risk Engine timeout or unavailable","created_at":"2026-04-07T19:09:24.397156+00:00","updated_at":"2026-04-07T19:09:24.397156+00:00","notes":"Robot test payload"} 
+ </msg>
+<msg time="2026-04-07T21:09:24.911198" level="INFO">${response} = &lt;Response [201]&gt;</msg>
+<var>${response}</var>
+<arg>application_api</arg>
+<arg>/applications</arg>
+<arg>json=${payload}</arg>
+<arg>expected_status=anything</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-07T21:09:18.976780" elapsed="5.934418"/>
+</kw>
+<return>
+<value>${response}</value>
+<status status="PASS" start="2026-04-07T21:09:24.911198" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:24.911198" level="INFO">${response} = &lt;Response [201]&gt;</msg>
+<var>${response}</var>
+<arg>${payload}</arg>
+<status status="PASS" start="2026-04-07T21:09:18.974706" elapsed="5.936492"/>
+</kw>
+<kw name="Response Status Should Be" owner="api">
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2026-04-07T21:09:24.914040" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${response.status_code}</arg>
+<arg>${expected_status_code}</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2026-04-07T21:09:24.913159" elapsed="0.000881"/>
+</kw>
+<arg>${response}</arg>
+<arg>201</arg>
+<status status="PASS" start="2026-04-07T21:09:24.913159" elapsed="0.000881"/>
+</kw>
+<kw name="Get Response Json" owner="api">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-07T21:09:24.915139" level="INFO">${body} = {'id': 'def175da-dc82-4416-a80e-85099735bb80', 'applicant_name': 'Applicant-34df6147', 'annual_income': 65000.0, 'requested_amount': 25000.0, 'employment_status': 'employed', 'status': 'error', 'risk_...</msg>
+<var>${body}</var>
+<arg>$response.json()</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-07T21:09:24.914040" elapsed="0.001099"/>
+</kw>
+<return>
+<value>${body}</value>
+<status status="PASS" start="2026-04-07T21:09:24.915139" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:24.915139" level="INFO">${body} = {'id': 'def175da-dc82-4416-a80e-85099735bb80', 'applicant_name': 'Applicant-34df6147', 'annual_income': 65000.0, 'requested_amount': 25000.0, 'employment_status': 'employed', 'status': 'error', 'risk_...</msg>
+<var>${body}</var>
+<arg>${response}</arg>
+<status status="PASS" start="2026-04-07T21:09:24.914040" elapsed="0.001099"/>
+</kw>
+<kw name="Should Be Equal" owner="BuiltIn">
+<arg>${body}[status]</arg>
+<arg>error</arg>
+<doc>Fails if the given objects are unequal.</doc>
+<status status="PASS" start="2026-04-07T21:09:24.915139" elapsed="0.001123"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>$body["risk_score"] is None</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2026-04-07T21:09:24.916262" elapsed="0.000870"/>
+</kw>
+<kw name="Should Be Equal" owner="BuiltIn">
+<arg>${body}[decision_reason]</arg>
+<arg>Risk Engine timeout or unavailable</arg>
+<doc>Fails if the given objects are unequal.</doc>
+<status status="PASS" start="2026-04-07T21:09:24.917132" elapsed="0.000000"/>
+</kw>
+<kw name="Latest Notification Should Have Status" owner="common">
+<kw name="Get Notifications" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:25.362806" level="INFO">HTTP Request: GET http://127.0.0.1:8002/notifications "HTTP/1.1 200 OK"</msg>
+<msg time="2026-04-07T21:09:25.364982" level="INFO">${notifications_response} = {'call_count': 1, 'notifications': [{'application_id': 'def175da-dc82-4416-a80e-85099735bb80', 'status': 'error'}]}</msg>
+<var>${notifications_response}</var>
+<status status="PASS" start="2026-04-07T21:09:24.919459" elapsed="0.445523"/>
+</kw>
+<kw name="Should Have Notification For Status" owner="loanflow_keywords">
+<arg>${notifications_response}</arg>
+<arg>${expected_status}</arg>
+<status status="PASS" start="2026-04-07T21:09:25.364982" elapsed="0.000000"/>
+</kw>
+<arg>error</arg>
+<status status="PASS" start="2026-04-07T21:09:24.919459" elapsed="0.445523"/>
+</kw>
+<doc>Sets status error and risk_score null when Risk Engine exceeds 5 seconds.</doc>
+<status status="PASS" start="2026-04-07T21:09:17.206978" elapsed="8.159182"/>
+</test>
+<test id="s1-t5" name="Duplicate Submission Returns Existing Application" line="51">
+<kw name="Reset Test State" owner="common" type="SETUP">
+<kw name="Reset Application Api State" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:25.849784" level="INFO">HTTP Request: POST http://127.0.0.1:8000/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:25.367725" elapsed="0.482059"/>
+</kw>
+<kw name="Reset Risk Engine Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:26.304205" level="INFO">HTTP Request: POST http://127.0.0.1:8001/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:25.849784" elapsed="0.454421"/>
+</kw>
+<kw name="Reset Notification Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:26.778287" level="INFO">HTTP Request: POST http://127.0.0.1:8002/__admin/reset "HTTP/1.1 200 OK"</msg>
+<status status="PASS" start="2026-04-07T21:09:26.304205" elapsed="0.475089"/>
+</kw>
+<status status="PASS" start="2026-04-07T21:09:25.367013" elapsed="1.412281"/>
+</kw>
+<kw name="Configure Risk Engine For Approval" owner="common">
+<kw name="Configure Risk Engine Mock" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:27.205904" level="INFO">HTTP Request: POST http://127.0.0.1:8001/__admin/config "HTTP/1.1 200 OK"</msg>
+<arg>85</arg>
+<arg>approve</arg>
+<arg>0</arg>
+<status status="PASS" start="2026-04-07T21:09:26.780222" elapsed="0.427712"/>
+</kw>
+<status status="PASS" start="2026-04-07T21:09:26.779294" elapsed="0.428640"/>
+</kw>
+<kw name="Create Idempotent Payload" owner="common">
+<kw name="Generate Application Payload" owner="loanflow_keywords">
+<msg time="2026-04-07T21:09:27.208960" level="INFO">${payload} = {'applicant_name': 'Maria Same', 'annual_income': 65000, 'requested_amount': 25000, 'employment_status': 'employed', 'notes': 'Robot test payload'}</msg>
+<var>${payload}</var>
+<arg>applicant_name=${applicant_name}</arg>
+<arg>annual_income=65000</arg>
+<arg>requested_amount=25000</arg>
+<arg>employment_status=employed</arg>
+<status status="PASS" start="2026-04-07T21:09:27.208960" elapsed="0.000000"/>
+</kw>
+<return>
+<value>${payload}</value>
+<status status="PASS" start="2026-04-07T21:09:27.208960" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:27.209983" level="INFO">${payload} = {'applicant_name': 'Maria Same', 'annual_income': 65000, 'requested_amount': 25000, 'employment_status': 'employed', 'notes': 'Robot test payload'}</msg>
+<var>${payload}</var>
+<arg>Maria Same</arg>
+<status status="PASS" start="2026-04-07T21:09:27.208960" elapsed="0.001023"/>
+</kw>
+<kw name="Create Loan Application" owner="api">
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-07T21:09:28.114824" level="INFO">POST Request : url=http://127.0.0.1:8000/applications 
+ path_url=/applications 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Length': '147', 'Content-Type': 'application/json'} 
+ body=b'{"applicant_name": "Maria Same", "annual_income": 65000, "requested_amount": 25000, "employment_status": "employed", "notes": "Robot test payload"}' 
+ </msg>
+<msg time="2026-04-07T21:09:28.114824" level="INFO">POST Response : url=http://127.0.0.1:8000/applications 
+ status=201, reason=Created 
+ headers={'date': 'Tue, 07 Apr 2026 19:09:26 GMT', 'server': 'uvicorn', 'content-length': '368', 'content-type': 'application/json'} 
+ body={"id":"53568c63-3c23-4ade-8ef1-7dd7afee29db","applicant_name":"Maria Same","annual_income":65000.0,"requested_amount":25000.0,"employment_status":"employed","status":"approved","risk_score":85,"decision_reason":"Meets auto-approval threshold","created_at":"2026-04-07T19:09:27.699854+00:00","updated_at":"2026-04-07T19:09:27.699854+00:00","notes":"Robot test payload"} 
+ </msg>
+<msg time="2026-04-07T21:09:28.114824" level="INFO">${response} = &lt;Response [201]&gt;</msg>
+<var>${response}</var>
+<arg>application_api</arg>
+<arg>/applications</arg>
+<arg>json=${payload}</arg>
+<arg>expected_status=anything</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-07T21:09:27.210791" elapsed="0.904033"/>
+</kw>
+<return>
+<value>${response}</value>
+<status status="PASS" start="2026-04-07T21:09:28.114824" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:28.114824" level="INFO">${first_response} = &lt;Response [201]&gt;</msg>
+<var>${first_response}</var>
+<arg>${payload}</arg>
+<status status="PASS" start="2026-04-07T21:09:27.210791" elapsed="0.904033"/>
+</kw>
+<kw name="Create Loan Application" owner="api">
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-07T21:09:28.129562" level="INFO">POST Request : url=http://127.0.0.1:8000/applications 
+ path_url=/applications 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Length': '147', 'Content-Type': 'application/json'} 
+ body=b'{"applicant_name": "Maria Same", "annual_income": 65000, "requested_amount": 25000, "employment_status": "employed", "notes": "Robot test payload"}' 
+ </msg>
+<msg time="2026-04-07T21:09:28.130068" level="INFO">POST Response : url=http://127.0.0.1:8000/applications 
+ status=201, reason=Created 
+ headers={'date': 'Tue, 07 Apr 2026 19:09:27 GMT', 'server': 'uvicorn', 'content-length': '368', 'content-type': 'application/json'} 
+ body={"id":"53568c63-3c23-4ade-8ef1-7dd7afee29db","applicant_name":"Maria Same","annual_income":65000.0,"requested_amount":25000.0,"employment_status":"employed","status":"approved","risk_score":85,"decision_reason":"Meets auto-approval threshold","created_at":"2026-04-07T19:09:27.699854+00:00","updated_at":"2026-04-07T19:09:27.699854+00:00","notes":"Robot test payload"} 
+ </msg>
+<msg time="2026-04-07T21:09:28.130068" level="INFO">${response} = &lt;Response [201]&gt;</msg>
+<var>${response}</var>
+<arg>application_api</arg>
+<arg>/applications</arg>
+<arg>json=${payload}</arg>
+<arg>expected_status=anything</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-07T21:09:28.119008" elapsed="0.011060"/>
+</kw>
+<return>
+<value>${response}</value>
+<status status="PASS" start="2026-04-07T21:09:28.130068" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:28.130068" level="INFO">${second_response} = &lt;Response [201]&gt;</msg>
+<var>${second_response}</var>
+<arg>${payload}</arg>
+<status status="PASS" start="2026-04-07T21:09:28.114824" elapsed="0.015244"/>
+</kw>
+<kw name="Response Status Should Be" owner="api">
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2026-04-07T21:09:28.137065" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${response.status_code}</arg>
+<arg>${expected_status_code}</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2026-04-07T21:09:28.137065" elapsed="0.000000"/>
+</kw>
+<arg>${first_response}</arg>
+<arg>201</arg>
+<status status="PASS" start="2026-04-07T21:09:28.132407" elapsed="0.004658"/>
+</kw>
+<kw name="Response Status Should Be" owner="api">
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2026-04-07T21:09:28.140616" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${response.status_code}</arg>
+<arg>${expected_status_code}</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2026-04-07T21:09:28.139069" elapsed="0.001547"/>
+</kw>
+<arg>${second_response}</arg>
+<arg>201</arg>
+<status status="PASS" start="2026-04-07T21:09:28.139069" elapsed="0.001547"/>
+</kw>
+<kw name="Extract Application Id" owner="api">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-07T21:09:28.140616" level="INFO">${body} = {'id': '53568c63-3c23-4ade-8ef1-7dd7afee29db', 'applicant_name': 'Maria Same', 'annual_income': 65000.0, 'requested_amount': 25000.0, 'employment_status': 'employed', 'status': 'approved', 'risk_score...</msg>
+<var>${body}</var>
+<arg>$response.json()</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-07T21:09:28.140616" elapsed="0.000000"/>
+</kw>
+<return>
+<value>${body}[id]</value>
+<status status="PASS" start="2026-04-07T21:09:28.140616" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:28.140616" level="INFO">${first_id} = 53568c63-3c23-4ade-8ef1-7dd7afee29db</msg>
+<var>${first_id}</var>
+<arg>${first_response}</arg>
+<status status="PASS" start="2026-04-07T21:09:28.140616" elapsed="0.000000"/>
+</kw>
+<kw name="Extract Application Id" owner="api">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-07T21:09:28.140616" level="INFO">${body} = {'id': '53568c63-3c23-4ade-8ef1-7dd7afee29db', 'applicant_name': 'Maria Same', 'annual_income': 65000.0, 'requested_amount': 25000.0, 'employment_status': 'employed', 'status': 'approved', 'risk_score...</msg>
+<var>${body}</var>
+<arg>$response.json()</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-07T21:09:28.140616" elapsed="0.000000"/>
+</kw>
+<return>
+<value>${body}[id]</value>
+<status status="PASS" start="2026-04-07T21:09:28.140616" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:28.140616" level="INFO">${second_id} = 53568c63-3c23-4ade-8ef1-7dd7afee29db</msg>
+<var>${second_id}</var>
+<arg>${second_response}</arg>
+<status status="PASS" start="2026-04-07T21:09:28.140616" elapsed="0.000000"/>
+</kw>
+<kw name="Should Be Same Application Id" owner="loanflow_keywords">
+<arg>${first_id}</arg>
+<arg>${second_id}</arg>
+<status status="PASS" start="2026-04-07T21:09:28.140616" elapsed="0.000000"/>
+</kw>
+<kw name="List Applications" owner="api">
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2026-04-07T21:09:28.156064" level="INFO">GET Request : url=http://127.0.0.1:8000/applications 
+ path_url=/applications 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive'} 
+ body=None 
+ </msg>
+<msg time="2026-04-07T21:09:28.156064" level="INFO">GET Response : url=http://127.0.0.1:8000/applications 
+ status=200, reason=OK 
+ headers={'date': 'Tue, 07 Apr 2026 19:09:27 GMT', 'server': 'uvicorn', 'content-length': '370', 'content-type': 'application/json'} 
+ body=[{"id":"53568c63-3c23-4ade-8ef1-7dd7afee29db","applicant_name":"Maria Same","annual_income":65000.0,"requested_amount":25000.0,"employment_status":"employed","status":"approved","risk_score":85,"decision_reason":"Meets auto-approval threshold","created_at":"2026-04-07T19:09:27.699854+00:00","updated_at":"2026-04-07T19:09:27.699854+00:00","notes":"Robot test payload"}] 
+ </msg>
+<msg time="2026-04-07T21:09:28.156064" level="INFO">${response} = &lt;Response [200]&gt;</msg>
+<var>${response}</var>
+<arg>application_api</arg>
+<arg>/applications</arg>
+<arg>expected_status=anything</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-07T21:09:28.146784" elapsed="0.009280"/>
+</kw>
+<return>
+<value>${response}</value>
+<status status="PASS" start="2026-04-07T21:09:28.156064" elapsed="0.001002"/>
+</return>
+<msg time="2026-04-07T21:09:28.157066" level="INFO">${list_response} = &lt;Response [200]&gt;</msg>
+<var>${list_response}</var>
+<status status="PASS" start="2026-04-07T21:09:28.146260" elapsed="0.010806"/>
+</kw>
+<kw name="Get Response Json" owner="api">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-07T21:09:28.159071" level="INFO">${body} = [{'id': '53568c63-3c23-4ade-8ef1-7dd7afee29db', 'applicant_name': 'Maria Same', 'annual_income': 65000.0, 'requested_amount': 25000.0, 'employment_status': 'employed', 'status': 'approved', 'risk_scor...</msg>
+<var>${body}</var>
+<arg>$response.json()</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-07T21:09:28.158061" elapsed="0.001010"/>
+</kw>
+<return>
+<value>${body}</value>
+<status status="PASS" start="2026-04-07T21:09:28.159071" elapsed="0.000000"/>
+</return>
+<msg time="2026-04-07T21:09:28.159071" level="INFO">${applications} = [{'id': '53568c63-3c23-4ade-8ef1-7dd7afee29db', 'applicant_name': 'Maria Same', 'annual_income': 65000.0, 'requested_amount': 25000.0, 'employment_status': 'employed', 'status': 'approved', 'risk_scor...</msg>
+<var>${applications}</var>
+<arg>${list_response}</arg>
+<status status="PASS" start="2026-04-07T21:09:28.157066" elapsed="0.002005"/>
+</kw>
+<kw name="Length Should Be" owner="BuiltIn">
+<msg time="2026-04-07T21:09:28.160589" level="INFO">Length is 1.</msg>
+<arg>${applications}</arg>
+<arg>1</arg>
+<doc>Verifies that the length of the given item is correct.</doc>
+<status status="PASS" start="2026-04-07T21:09:28.159071" elapsed="0.001518"/>
+</kw>
+<doc>Returns the same application for same name and amount within idempotency window.</doc>
+<status status="PASS" start="2026-04-07T21:09:25.366160" elapsed="2.794429"/>
+</test>
+<status status="PASS" start="2026-04-07T21:09:08.640486" elapsed="19.521672"/>
+</suite>
+<statistics>
+<total>
+<stat pass="5" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Applications" id="s1" pass="5" fail="0" skip="0">Applications</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
