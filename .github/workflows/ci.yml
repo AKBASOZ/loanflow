@@ -28,7 +28,7 @@ jobs:
 
       - name: Verify Robot Framework installation
         run: |
-          robot --version
+          robot --version --nostatusrc
 
       - name: Verify Python files compile
         run: |
